@@ -45,7 +45,18 @@ func main() {
 var rootCmd = &cobra.Command{
 	Use:   "solax",
 	Short: "Solax reads data from a Solax X1 air",
-	Long:  `Solax reads data from a Solax X1 air using an RS485 connection.`,
+	Long: `Solax reads data from a Solax X1 air using an RS485 connection.
+
+Typical usage:
+A. You need to register your inverter first (this is 1 time per inverter)
+	1. Connect your Solax device directly to your PC (usually with a USB-RS485 converter)
+	2. Run 'solax -d /dev/yourserialdevicehere find'. This will return a Serial. Copy it.
+	3. Register the inverter using 'solax -a <address> -s <serial> -d /dev/yourserialdevicehere register', where address is a unique number between 1 and 255
+
+B. Get the information from your inverter:
+	1. Run 'solax -d /dev/yourserialdevicehere -a <address> info'
+	2. use the --json flag to output JSON
+	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 	},
@@ -105,6 +116,9 @@ func Find(cmd *cobra.Command, args []string) {
 func Register(cmd *cobra.Command, args []string) {
 	if address < 1 || address > 255 {
 		log.Fatal("Address must be between 1-255")
+	}
+	if len(serial) < 10 {
+		log.Fatal("You need to provide a valid serial")
 	}
 
 	client, err := solax.NewClient(device)
