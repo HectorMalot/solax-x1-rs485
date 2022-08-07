@@ -61,3 +61,5 @@ tmp/*
 
 # log files
 *.log%   
+
+dist/
