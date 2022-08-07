@@ -153,7 +153,7 @@ func Info(cmd *cobra.Command, args []string) {
 		log.Printf("Raw response: %X", client.LastResponse)
 	}
 	if outputJson {
-		out, err := json.Marshal(info)
+		out, err := json.Marshal(solax.NormalizeInfoResponse(*info))
 		if err != nil {
 			log.Fatal(err)
 		}
