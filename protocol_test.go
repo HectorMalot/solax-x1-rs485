@@ -53,3 +53,21 @@ func FuzzParsePacket(f *testing.F) {
 		require.Equal(t, parsed.Data, p.Data)
 	})
 }
+
+func TestNormalizeNormalInfoResponse(t *testing.T) {
+	in := NormalInfoResponse{
+		Mode:       2,
+		ErrMessage: 0b10001000_01000100_00100010_00010001,
+	}
+	out := NormalizeInfoResponse(in)
+	require.Equal(t, "Normal", out.Mode)
+	require.Len(t, out.ErrMessage, 8)
+	require.Contains(t, out.ErrMessage, "TzProtectFault")
+	require.Contains(t, out.ErrMessage, "PLLLostFault")
+	require.Contains(t, out.ErrMessage, "ResidualCurrentFault")
+	require.Contains(t, out.ErrMessage, "TemperatureOverFault")
+	require.Contains(t, out.ErrMessage, "BIT18")
+	require.Contains(t, out.ErrMessage, "SampleConsistenceFault")
+	require.Contains(t, out.ErrMessage, "BIT27")
+	require.Contains(t, out.ErrMessage, "BIT31")
+}
