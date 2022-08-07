@@ -3,6 +3,7 @@ module github.com/hectormalot/solax-x1-rs485
 go 1.18
 
 require (
+	github.com/pterm/pterm v0.12.45
 	github.com/spf13/cobra v1.5.0
 	github.com/stretchr/testify v1.8.0
 	github.com/tarm/serial v0.0.0-20180830185346-98f6abe2eb07
@@ -18,7 +19,6 @@ require (
 	github.com/lithammer/fuzzysearch v1.1.5 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/pterm/pterm v0.12.45 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
