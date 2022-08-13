@@ -167,7 +167,7 @@ func RegisterInverterRequest(serial []byte, address byte) *Packet {
 	return p
 }
 
-//0x81
+// 0x81
 func ParseRegisterInverterResponse(body []byte) error {
 	p, err := ParsePacket(body)
 	if err != nil {
@@ -205,7 +205,7 @@ func UnregisterInverterRequest(serial []byte, address byte) *Packet {
 	return p
 }
 
-//0x82
+// 0x82
 func ParseUnregisterInverterResponse(body []byte) error {
 	p, err := ParsePacket(body)
 	if err != nil {
@@ -562,17 +562,17 @@ type InverterInfoResponse struct {
 }
 
 func InverterInfoResponseFromData(data []byte) (InverterInfoResponse, error) {
-	if len(data) < 67 {
-		return InverterInfoResponse{}, fmt.Errorf("%w: expected length of 67, got %d", ErrInvalidBody, len(data))
+	if len(data) < 58 {
+		return InverterInfoResponse{}, fmt.Errorf("%w: expected length of 58, got %d", ErrInvalidBody, len(data))
 	}
 	result := InverterInfoResponse{
-		Phase:           data[9],
-		RatedPower:      string(data[10:16]),
-		FirmwareVersion: string(data[16:21]),
-		ModuleName:      string(data[21:35]),
-		FactoryName:     string(data[35:49]),
-		SerialNumber:    string(data[49:63]),
-		RatedBusVoltage: string(data[63:67]),
+		Phase:           data[0],
+		RatedPower:      string(data[1:7]),
+		FirmwareVersion: string(data[7:12]),
+		ModuleName:      string(data[12:26]),
+		FactoryName:     string(data[26:40]),
+		SerialNumber:    string(data[40:54]),
+		RatedBusVoltage: string(data[54:58]),
 	}
 	return result, nil
 }

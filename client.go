@@ -23,6 +23,7 @@ type Connection interface {
 type Client struct {
 	Conn         Connection
 	LastResponse []byte
+	WaitTime     time.Duration // Time to wait for a response after sending
 }
 
 func NewClient(device string) (*Client, error) {
@@ -41,7 +42,7 @@ func NewClient(device string) (*Client, error) {
 }
 
 func NewClientWithConnection(conn Connection) (*Client, error) {
-	return &Client{Conn: conn}, nil
+	return &Client{Conn: conn, WaitTime: 250 * time.Millisecond}, nil
 }
 
 /*
@@ -268,5 +269,6 @@ func (c *Client) Send(req []byte) error {
 }
 
 func (c *Client) Read() ([]byte, error) {
+	time.Sleep(c.WaitTime)
 	return io.ReadAll(c.Conn)
 }

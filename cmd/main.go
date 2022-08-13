@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	solax "github.com/hectormalot/solax-x1-rs485"
@@ -161,13 +162,14 @@ func Info(cmd *cobra.Command, args []string) {
 
 	inv := &solax.Inverter{Address: byte(address)}
 	info, err := client.GetInfo(inv)
+	nInfo := solax.NormalizeInfoResponse(*info)
 	fatalIfError(err)
 
 	if verbose {
 		log.Printf("Raw response: %X", client.LastResponse)
 	}
 	if outputJson {
-		out, err := json.Marshal(solax.NormalizeInfoResponse(*info))
+		out, err := json.Marshal(nInfo)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -177,27 +179,27 @@ func Info(cmd *cobra.Command, args []string) {
 	pterm.DefaultSection.Println("Real-time inverter information:")
 	pterm.DefaultTable.WithHasHeader().WithData(pterm.TableData{
 		{"Parameter", "Value", "Unit"},
-		{"Temperature", fmt.Sprintf("%d", info.Temperature), "Celsius"},
-		{"EnergyToday", fmt.Sprintf("%.1f", float64(info.EnergyToday)/10), "kWh"},
-		{"Vpv1", fmt.Sprintf("%.1f", float64(info.Vpv1)/10), "Volt"},
-		{"Vpv2", fmt.Sprintf("%.1f", float64(info.Vpv2)/10), "Volt"},
-		{"Apv1", fmt.Sprintf("%.1f", float64(info.Apv1)/10), "Ampere"},
-		{"Apv2", fmt.Sprintf("%.1f", float64(info.Apv2)/10), "Ampere"},
-		{"Iac", fmt.Sprintf("%.1f", float64(info.Iac)/10), "Ampere"},
-		{"Vac", fmt.Sprintf("%.1f", float64(info.Vac)/10), "Volt"},
-		{"Frequency", fmt.Sprintf("%.1f", float64(info.Frequency)/100), "Hz"},
-		{"Power", fmt.Sprintf("%d", info.Power), "W"},
-		{"EnergyTotal", fmt.Sprintf("%.1f", float64(info.EnergyTotal)/10), "KwH"},
-		{"TimeTotal", fmt.Sprintf("%d", info.TimeTotal), "Hours"},
-		{"Mode", fmt.Sprintf("%X", info.Mode), "-"},
-		{"GridVoltFault", fmt.Sprintf("%.1f", float64(info.GridVoltFault)/10), "Volt"},
-		{"GridFreqFault", fmt.Sprintf("%.2f", float64(info.GridFreqFault)/100), "Hz"},
-		{"DCIFault", fmt.Sprintf("%d", info.DCIFault), "mA"},
-		{"TemperatureFault", fmt.Sprintf("%d", info.TemperatureFault), "-"},
-		{"PV1Fault", fmt.Sprintf("%.1f", float64(info.PV1Fault)/10), "Volt"},
-		{"PV2Fault", fmt.Sprintf("%.1f", float64(info.PV2Fault)/10), "Volt"},
-		{"GFCFault", fmt.Sprintf("%d", info.GFCFault), "mA"},
-		{"ErrMessage", fmt.Sprintf("%d", info.ErrMessage), "-"},
+		{"Temperature", fmt.Sprintf("%d", nInfo.Temperature), "Celsius"},
+		{"EnergyToday", fmt.Sprintf("%.1f", nInfo.EnergyToday), "kWh"},
+		{"Vpv1", fmt.Sprintf("%.1f", nInfo.Vpv1), "Volt"},
+		{"Vpv2", fmt.Sprintf("%.1f", nInfo.Vpv2), "Volt"},
+		{"Apv1", fmt.Sprintf("%.1f", nInfo.Apv1), "Ampere"},
+		{"Apv2", fmt.Sprintf("%.1f", nInfo.Apv2), "Ampere"},
+		{"Iac", fmt.Sprintf("%.1f", nInfo.Iac), "Ampere"},
+		{"Vac", fmt.Sprintf("%.1f", nInfo.Vac), "Volt"},
+		{"Frequency", fmt.Sprintf("%.2f", nInfo.Frequency), "Hz"},
+		{"Power", fmt.Sprintf("%d", nInfo.Power), "W"},
+		{"EnergyTotal", fmt.Sprintf("%.1f", nInfo.EnergyTotal), "kWh"},
+		{"TimeTotal", fmt.Sprintf("%d", nInfo.TimeTotal), "Hours"},
+		{"Mode", fmt.Sprintf("%d - %s", info.Mode, nInfo.Mode), "-"},
+		{"GridVoltFault", fmt.Sprintf("%.1f", nInfo.GridVoltFault), "Volt"},
+		{"GridFreqFault", fmt.Sprintf("%.2f", nInfo.GridFreqFault), "Hz"},
+		{"DCIFault", fmt.Sprintf("%.3f", nInfo.DCIFault), "A"},
+		{"TemperatureFault", fmt.Sprintf("%.2f", nInfo.TemperatureFault), "-"},
+		{"PV1Fault", fmt.Sprintf("%.1f", nInfo.PV1Fault), "Volt"},
+		{"PV2Fault", fmt.Sprintf("%.1f", nInfo.PV2Fault), "Volt"},
+		{"GFCFault", fmt.Sprintf("%.3f", nInfo.GFCFault), "A"},
+		{"ErrMessage", fmt.Sprintf("%s", strings.Join(nInfo.ErrMessage, ", ")), "-"},
 		{"Last update", time.Now().Format("2006-01-02 15:04:05"), ""},
 	}).Render()
 
