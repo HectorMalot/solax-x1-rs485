@@ -17,6 +17,7 @@ const (
 
 var (
 	ErrMaxDataSizeExceeded    = errors.New("Exceeded max data length is 255 bytes")
+	ErrEmptyBody              = errors.New("Received empty body")
 	ErrInvalidBody            = errors.New("Could not parse body into valid packet")
 	ErrUnexpectedControlCode  = errors.New("Unexpected Control Code")
 	ErrUnexpectedFunctionCode = errors.New("Unexpected Function Code")
@@ -76,6 +77,9 @@ func DefaultPacket() *Packet {
 }
 
 func ParsePacket(res []byte) (*Packet, error) {
+	if len(res) == 0 {
+		return nil, ErrEmptyBody
+	}
 	if len(res) < 11 {
 		return nil, fmt.Errorf("%w: minimum packet size is 11 bytes, got %d bytes", ErrInvalidBody, len(res))
 	}

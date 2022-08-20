@@ -93,7 +93,6 @@ func (c *Client) FindUnregisteredInverter() (*Inverter, error) {
 	if err != nil {
 		return nil, err
 	}
-	c.LastResponse = resp
 	if len(resp) == 0 {
 		return nil, ErrNoInverter
 	}
@@ -131,7 +130,6 @@ func (c *Client) RegisterInverter(inverter *Inverter, address byte) error {
 	if err != nil {
 		return err
 	}
-	c.LastResponse = resp
 	err = ParseRegisterInverterResponse(resp)
 	if err != nil {
 		return err
@@ -167,7 +165,6 @@ func (c *Client) UnregisterInverter(inverter *Inverter) error {
 	if err != nil {
 		return err
 	}
-	c.LastResponse = resp
 	err = ParseUnregisterInverterResponse(resp)
 	if err != nil {
 		return err
@@ -208,7 +205,6 @@ func (c *Client) GetInfo(inverter *Inverter) (*NormalInfoResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	c.LastResponse = resp
 	result, err := ParseNormalInfoResponse(resp)
 	if err != nil {
 		return nil, err
@@ -242,7 +238,6 @@ func (c *Client) GetInverterInfo(inverter *Inverter) (*InverterInfoResponse, err
 	if err != nil {
 		return nil, err
 	}
-	c.LastResponse = resp
 	result, err := ParseInverterInfoResponse(resp)
 	if err != nil {
 		return nil, err
@@ -270,5 +265,7 @@ func (c *Client) Send(req []byte) error {
 
 func (c *Client) Read() ([]byte, error) {
 	time.Sleep(c.WaitTime)
-	return io.ReadAll(c.Conn)
+	response, err := io.ReadAll(c.Conn)
+	c.LastResponse = response
+	return response, err
 }

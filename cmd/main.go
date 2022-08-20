@@ -162,12 +162,12 @@ func Info(cmd *cobra.Command, args []string) {
 
 	inv := &solax.Inverter{Address: byte(address)}
 	info, err := client.GetInfo(inv)
-	nInfo := solax.NormalizeInfoResponse(*info)
-	fatalIfError(err)
-
 	if verbose {
 		log.Printf("Raw response: %X", client.LastResponse)
 	}
+	fatalIfError(err)
+
+	nInfo := solax.NormalizeInfoResponse(*info)
 	if outputJson {
 		out, err := json.Marshal(nInfo)
 		if err != nil {
